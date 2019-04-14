@@ -1,9 +1,9 @@
 ﻿function GetPluginSettings()
 {
 	return {
-		"name":			"Odnoklassniki-iFrame",	// as appears in 'insert object' dialog, can be changed as long as "id" stays the same
+		"name":			"OK-iframe",	// as appears in 'insert object' dialog, can be changed as long as "id" stays the same
 		"id":			"OKAPI",				// this is used to identify this plugin and is saved to the project; never change it
-		"version":		"1.0",					// (float in x.y format) Plugin version - C2 shows compatibility warnings based on this
+		"version":		"1.1",					// (float in x.y format) Plugin version - C2 shows compatibility warnings based on this
 		"description":	"Odnoklassniki social network API SDK. Doesn't work for external applications.",
 		"author":		"DevMule",
 		"help url":		"https://github.com/DevMule",
@@ -44,9 +44,9 @@
 // example				
 //AddNumberParam("Number", "Enter a number to test if positive.");
 
-AddCondition(0,	cf_trigger, "On init done", "OKAPI", "On init done", "Triggered on start of layout when user is successfully initialized.", "OnInitDone");
+AddCondition(0,	cf_trigger, "On init done", "initialization", "On init done", "Triggered on start of layout when user is successfully initialized.", "OnInitDone");
 
-AddCondition(1,	cf_trigger, "On init fail", "OKAPI", "On init fail", "Triggered on start of layout when user initialization failed.", "OnInitFail");
+AddCondition(1,	cf_trigger, "On init fail", "initialization", "On init fail", "Triggered on start of layout when user initialization failed.", "OnInitFail");
 ////////////////////////////////////////
 // Actions
 
@@ -67,11 +67,13 @@ AddStringParam("code",			"Product identificator");
 AddNumberParam("price",			"Cost in OKs");
 AddStringParam("attributes",	"JSON key - value pairs containing additional transaction parameters to be transferred to the server");
 AddStringParam("callback",		"true/false - update the application after a successful transaction?");
-AddAction(0, af_none, "Show payment", "OKAPI", "Show payment:{0}, {3} OK", "Show payment dialog with some options.", "ShowPayment");
+AddAction(0, af_none, "Show payment", "windows", "Show payment:{0}, {3} OK", "Show payment dialog with some options.", "ShowPayment");
 
 AddStringParam("text",	"Text that will be shown to friends");
 AddStringParam("params",		"JSON custom parameters to be transferred to the server");
-AddAction(1, af_none, "Show invite", "OKAPI", "Show invite", "Show invite dialog.", "ShowInvite");
+AddAction(1, af_none, "Show invite", "windows", "Show invite", "Show invite dialog.", "ShowInvite");
+
+AddAction(2, af_none, "Init User", "initialization", "Init User", "try to initialize user, call triggers 'On init done' and 'On init fail'", "InitUser");
 
 ////////////////////////////////////////
 // Expressions
@@ -86,7 +88,7 @@ AddAction(1, af_none, "Show invite", "OKAPI", "Show invite", "Show invite dialog
 
 // example
 
-AddExpression(0, ef_return_string, "Get init status", "OKAPI", "GetIsInit", "return True if user initialized successfully");
+AddExpression(0, ef_return_string, "Get init status", "initialization", "GetIsInit", "return True if user initialized successfully");
 
 ////////////////////////////////////////
 ACESDone();
