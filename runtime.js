@@ -27,6 +27,10 @@ cr.plugins_.OKAPI = function(runtime)
 
 	var OKRuntime = null;
 	var OKinstance = null;
+	var UserID = null;
+	var UserFirstName = null;
+	var UserLastName = null;
+	var UserAvatar = null;
 
 	// called on startup for each object type
 	typeProto.onCreate = function()
@@ -69,13 +73,15 @@ cr.plugins_.OKAPI = function(runtime)
 	// Conditions
 	function Cnds() {};
 	
-	Cnds.prototype.OnInitDone = function ()
-	{
+	Cnds.prototype.OnInitDone = function (){
 		return true;
 	};
 	
-	Cnds.prototype.OnInitFail = function ()
-	{
+	Cnds.prototype.OnInitFail = function (){
+		return true;
+	};
+	
+	Cnds.prototype.OnUserdataLoaded = function (){
 		return true;
 	};
 	
@@ -85,10 +91,25 @@ cr.plugins_.OKAPI = function(runtime)
 	// Expressions
 	function Exps() {};
 	
-	Exps.prototype.GetIsInit = function (ret)
-	{
+	Exps.prototype.GetIsInit = function (ret){
 		var data = FAPI.initialized;
 		ret.set_string(data.toString());
+	};
+	
+	Exps.prototype.GetUserFirstName = function (ret){
+		ret.set_string(UserFirstName);
+	};
+	
+	Exps.prototype.GetUserLastName = function (ret){
+		ret.set_string(UserLastName);
+	};
+	
+	Exps.prototype.GetUserID = function (ret){
+		ret.set_string(UserID);
+	};
+	
+	Exps.prototype.GetUserAvatar = function (ret){
+		ret.set_string(UserAvatar);
 	};
 	
 	pluginProto.exps = new Exps();
@@ -97,27 +118,39 @@ cr.plugins_.OKAPI = function(runtime)
 	// Actions
 	function Acts() {};
 
-	Acts.prototype.ShowPayment = function (name_, description_, code_, price_, attributes_, callback_)
-	{
+	Acts.prototype.ShowPayment = function (name_, description_, code_, price_, attributes_, callback_){
 		FAPI.UI.showPayment(name_, description_, code_, price_, attributes_, null, "ok", callback_);
 	};
 
-	Acts.prototype.ShowInvite = function (text_, params_)
-	{
+	Acts.prototype.ShowInvite = function (text_, params_){
 		FAPI.UI.showInvite(text_, params_);
 	};
 
-	Acts.prototype.InitUser = function ()
-	{
+	Acts.prototype.InitUser = function (){
+
+		var callback_getCurrentUser = function(method,result,data){
+			if (result){
+				UserID = result['uid'];
+				UserAvatar = result['pic128x128'];
+				UserFirstName = result['first_name'];
+				UserLastName = result['last_name'];
+				
+				OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnUserdataLoaded, OKinstance);
+			}
+		}
+
 		var rParams = FAPI.Util.getRequestParameters();
 		FAPI.init(rParams["api_server"], rParams["apiconnection"],
-
+		
 			// on success
 			function() {
 				console.log("OK_API: initialization successfully done!");
 				OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnInitDone, OKinstance);
-			},
 
+				// ASK FOR USER DATA
+				FAPI.Client.call({"fields":"first_name,last_name,pic128x128","method":"users.getCurrentUser"}, callback_getCurrentUser);
+			},
+		
 			// on fail
 			function(error) {
 				console.log("OK_API: initialization error!");
