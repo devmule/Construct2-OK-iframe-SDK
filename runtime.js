@@ -11,6 +11,9 @@ cr.plugins_.OKAPI = function(runtime)
 	this.runtime = runtime;
 };
 
+// API_callback declaration
+var API_callback = null;
+
 (function ()
 {
 	var pluginProto = cr.plugins_.OKAPI.prototype;
@@ -51,6 +54,30 @@ cr.plugins_.OKAPI = function(runtime)
 		OKRuntime = this.runtime;
 		OKinstance = this;
 
+		API_callback = function(method, result, data){
+			/*
+			* method	-	название вызванного метода;
+			* result	-	результат выполнения (“ok” в случае успеха, “cancel” в случае, если пользователь отменил действие);
+			* data		-	дополнительная информация, например, для showInvite() – это список id приглашенных друзей, разделенный запятыми, в формате строки.
+			*
+			* Эта функция вызывается после завершения выполнения следующих методов:
+			* showPermissions, showInvite, showNotification, showPayment, showConfirmation, setWindowSize
+			*/
+			if (method == "showPayment"){
+				if (result == "ok"){
+					OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnTransactionDone, OKinstance);
+				} else {
+					OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnTransactionfail, OKinstance);
+				}
+			} else if (method == "showInvite"){
+				if (result == "ok"){
+					//OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnTransactionDone, OKinstance);
+				} else {
+					//OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnTransactionfail, OKinstance);
+				}
+			}
+		}
+
 
 		function loadScript( url, callback ) {
 			var script = document.createElement( "script" )
@@ -82,6 +109,14 @@ cr.plugins_.OKAPI = function(runtime)
 	};
 	
 	Cnds.prototype.OnUserdataLoaded = function (){
+		return true;
+	};
+	
+	Cnds.prototype.OnTransactionDone = function (){
+		return true;
+	};
+	
+	Cnds.prototype.OnTransactionfail = function (){
 		return true;
 	};
 	
@@ -118,8 +153,8 @@ cr.plugins_.OKAPI = function(runtime)
 	// Actions
 	function Acts() {};
 
-	Acts.prototype.ShowPayment = function (name_, description_, code_, price_, attributes_, callback_){
-		FAPI.UI.showPayment(name_, description_, code_, price_, attributes_, null, "ok", callback_);
+	Acts.prototype.ShowPayment = function (name_, description_, code_, price_, attributes_){
+		FAPI.UI.showPayment(name_, description_, code_, price_, attributes_, null, "ok", "true");
 	};
 
 	Acts.prototype.ShowInvite = function (text_, params_){

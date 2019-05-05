@@ -3,7 +3,7 @@
 	return {
 		"name":			"OK-iframe",	// as appears in 'insert object' dialog, can be changed as long as "id" stays the same
 		"id":			"OKAPI",				// this is used to identify this plugin and is saved to the project; never change it
-		"version":		"1.2",					// (float in x.y format) Plugin version - C2 shows compatibility warnings based on this
+		"version":		"1.3",					// (float in x.y format) Plugin version - C2 shows compatibility warnings based on this
 		"description":	"Odnoklassniki social network API SDK. Doesn't work for external applications.",
 		"author":		"DevMule",
 		"help url":		"https://github.com/DevMule",
@@ -47,6 +47,10 @@ AddCondition(1,	cf_trigger, "On init fail", "initialization", "On init fail", "T
 
 AddCondition(2,	cf_trigger, "On user data get", "initialization", "On user data get", "Triggered when user okapi successfully got userdata.", "OnUserdataLoaded");
 
+AddCondition(3,	cf_trigger, "On transaction success", "payment", "On transaction success", "Triggered when payment done successfully.", "OnTransactionDone");
+
+AddCondition(4,	cf_trigger, "On transaction failed", "payment", "On transaction failed", "Triggered when player reject payment.", "OnTransactionfail");
+
 
 // AddAction(id,				// any positive integer to uniquely identify this action
 //			 flags,				// (see docs) af_none, af_deprecated
@@ -56,12 +60,11 @@ AddCondition(2,	cf_trigger, "On user data get", "initialization", "On user data 
 //			 description,		// appears in event wizard dialog when selected
 //			 script_name);		// corresponding runtime function name
 
-AddStringParam("name",			"Name of the priduct");
+AddStringParam("name",			"Name of the product");
 AddStringParam("description",	"Description of product like 'with gold you can buy stuff'");
 AddStringParam("code",			"Product identificator");
 AddNumberParam("price",			"Cost in OKs");
 AddStringParam("attributes",	"JSON key - value pairs containing additional transaction parameters to be transferred to the server");
-AddStringParam("callback",		"true/false - update the application after a successful transaction?");
 AddAction(0, af_none, "Show payment", "windows", "Show payment: {0}, {3} OK", "Show payment dialog with some options.", "ShowPayment");
 
 AddStringParam("text",	"Text that will be shown to friends");
