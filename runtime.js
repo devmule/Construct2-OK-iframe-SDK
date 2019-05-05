@@ -71,9 +71,9 @@ var API_callback = null;
 				}
 			} else if (method == "showInvite"){
 				if (result == "ok"){
-					//OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnTransactionDone, OKinstance);
+					OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnInviteDone, OKinstance);
 				} else {
-					//OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnTransactionfail, OKinstance);
+					OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnInviteDecline, OKinstance);
 				}
 			}
 		}
@@ -117,6 +117,14 @@ var API_callback = null;
 	};
 	
 	Cnds.prototype.OnTransactionfail = function (){
+		return true;
+	};
+	
+	Cnds.prototype.OnInviteDone = function (){
+		return true;
+	};
+	
+	Cnds.prototype.OnInviteDecline = function (){
 		return true;
 	};
 	

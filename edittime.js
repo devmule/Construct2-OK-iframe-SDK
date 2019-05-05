@@ -51,6 +51,10 @@ AddCondition(3,	cf_trigger, "On transaction success", "payment", "On transaction
 
 AddCondition(4,	cf_trigger, "On transaction failed", "payment", "On transaction failed", "Triggered when player reject payment.", "OnTransactionfail");
 
+AddCondition(5,	cf_trigger, "On invited", "friend invitation", "On invited", "Trigger when invite at least one friend.", "OnInviteDone");
+
+AddCondition(6,	cf_trigger, "On invite declined", "friend invitation", "On invite declined", "Triggered when player reject friend invitation.", "OnInviteDecline");
+
 
 // AddAction(id,				// any positive integer to uniquely identify this action
 //			 flags,				// (see docs) af_none, af_deprecated
