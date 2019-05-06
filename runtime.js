@@ -30,10 +30,14 @@ var API_callback = null;
 
 	var OKRuntime = null;
 	var OKinstance = null;
+
 	var UserID = null;
 	var UserFirstName = null;
 	var UserLastName = null;
 	var UserAvatar = null;
+
+	var InvitedFriendsList = [];
+	var CurrentInvitedFriend = null;
 
 	// called on startup for each object type
 	typeProto.onCreate = function()
@@ -71,6 +75,8 @@ var API_callback = null;
 				}
 			} else if (method == "showInvite"){
 				if (result == "ok"){
+					InvitedFriendsList = data.split(',');
+					console.log(InvitedFriendsList);
 					OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnInviteDone, OKinstance);
 				} else {
 					OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnInviteDecline, OKinstance);
@@ -128,6 +134,19 @@ var API_callback = null;
 		return true;
 	};
 	
+	Cnds.prototype.ForEachInvited = function (){
+		var current_event = OKRuntime.getCurrentEventStack().current_event;
+
+		for (var i in InvitedFriendsList) {
+			CurrentInvitedFriend = InvitedFriendsList[i];
+			OKRuntime.pushCopySol(current_event.solModifiers);
+			current_event.retrigger();
+			OKRuntime.popSol(current_event.solModifiers);
+		}
+		CurrentInvitedFriend = null;
+		return false;
+	};
+	
 	pluginProto.cnds = new Cnds();
 
 	////////////////////////////////////////////////////////////////////////////
@@ -153,6 +172,10 @@ var API_callback = null;
 	
 	Exps.prototype.GetUserAvatar = function (ret){
 		ret.set_string(UserAvatar);
+	};
+	
+	Exps.prototype.GetInvitedFriendID = function (ret){
+		ret.set_string(CurrentInvitedFriend);
 	};
 	
 	pluginProto.exps = new Exps();

@@ -47,13 +47,17 @@ AddCondition(1,	cf_trigger, "On init fail", "initialization", "On init fail", "T
 
 AddCondition(2,	cf_trigger, "On user data get", "initialization", "On user data get", "Triggered when user okapi successfully got userdata.", "OnUserdataLoaded");
 
+
 AddCondition(3,	cf_trigger, "On transaction success", "payment", "On transaction success", "Triggered when payment done successfully.", "OnTransactionDone");
 
 AddCondition(4,	cf_trigger, "On transaction failed", "payment", "On transaction failed", "Triggered when player reject payment.", "OnTransactionfail");
 
+
 AddCondition(5,	cf_trigger, "On invited", "friend invitation", "On invited", "Trigger when invite at least one friend.", "OnInviteDone");
 
 AddCondition(6,	cf_trigger, "On invite declined", "friend invitation", "On invite declined", "Triggered when player reject friend invitation.", "OnInviteDecline");
+
+AddCondition(7, cf_looping, "For each invited friend", "friend invitation", "For each invited friend", "Repeat the event for each invited friend.", "ForEachInvited");
 
 
 // AddAction(id,				// any positive integer to uniquely identify this action
@@ -88,6 +92,7 @@ AddAction(2, af_none, "Init User", "initialization", "Init User", "try to initia
 
 AddExpression(0, ef_return_string, "Get init status", "initialization", "GetIsInit", "return True if user initialized successfully");
 
+
 AddExpression(1, ef_return_string, "User first name", "user data", "GetUserFirstName", "return User first name if init success, else return null");
 
 AddExpression(2, ef_return_string, "User last name", "user data", "GetUserLastName", "return User last name if init success, else return null");
@@ -95,6 +100,9 @@ AddExpression(2, ef_return_string, "User last name", "user data", "GetUserLastNa
 AddExpression(3, ef_return_string, "User ID", "user data", "GetUserID", "return User ID if init success, else return null");
 
 AddExpression(4, ef_return_string, "User avatar", "user data", "GetUserAvatar", "return avatar url if init success, else return null");
+
+
+AddExpression(5, ef_return_string, "Current invited friend ID", "friend invitation", "GetInvitedFriendID", "friend ID in foreach-loop cycle");
 
 ////////////////////////////////////////
 ACESDone();
