@@ -39,6 +39,9 @@ var API_callback = null;
 	var InvitedFriendsList = [];
 	var CurrentInvitedFriend = null;
 
+	var FriendsList = [];
+	var CurrentFriend = null;
+
 	// called on startup for each object type
 	typeProto.onCreate = function()
 	{
@@ -147,6 +150,23 @@ var API_callback = null;
 		return false;
 	};
 	
+	Cnds.prototype.OnFriendsGet = function (){
+		return true;
+	};
+	
+	Cnds.prototype.ForEachFriend = function (){
+		var current_event = OKRuntime.getCurrentEventStack().current_event;
+
+		for (var i in FriendsList) {
+			CurrentFriend = FriendsList[i];
+			OKRuntime.pushCopySol(current_event.solModifiers);
+			current_event.retrigger();
+			OKRuntime.popSol(current_event.solModifiers);
+		}
+		CurrentFriend = null;
+		return false;
+	};
+	
 	pluginProto.cnds = new Cnds();
 
 	////////////////////////////////////////////////////////////////////////////
@@ -178,6 +198,10 @@ var API_callback = null;
 		ret.set_string(CurrentInvitedFriend);
 	};
 	
+	Exps.prototype.GetFriendID = function (ret){
+		ret.set_string(CurrentFriend);
+	};
+	
 	pluginProto.exps = new Exps();
 
 	////////////////////////////////////////////////////////////////////////////
@@ -194,6 +218,26 @@ var API_callback = null;
 
 	Acts.prototype.InitUser = function (){
 
+		var rParams = FAPI.Util.getRequestParameters();
+		FAPI.init(rParams["api_server"], rParams["apiconnection"],
+		
+			// on success
+			function() {
+				console.log("OK_API: initialization successfully done!");
+				OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnInitDone, OKinstance);
+			},
+		
+			// on fail
+			function(error) {
+				console.log("OK_API: initialization error!");
+				console.log(error);
+				OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnInitFail, OKinstance);
+			}
+		);
+	};
+
+	Acts.prototype.CallForUserData = function (){
+
 		var callback_getCurrentUser = function(method,result,data){
 			if (result){
 				UserID = result['uid'];
@@ -205,25 +249,23 @@ var API_callback = null;
 			}
 		}
 
-		var rParams = FAPI.Util.getRequestParameters();
-		FAPI.init(rParams["api_server"], rParams["apiconnection"],
-		
-			// on success
-			function() {
-				console.log("OK_API: initialization successfully done!");
-				OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnInitDone, OKinstance);
+		// ASK FOR USER DATA
+		FAPI.Client.call({"fields":"first_name,last_name,pic128x128","method":"users.getCurrentUser"}, callback_getCurrentUser);
 
-				// ASK FOR USER DATA
-				FAPI.Client.call({"fields":"first_name,last_name,pic128x128","method":"users.getCurrentUser"}, callback_getCurrentUser);
-			},
-		
-			// on fail
-			function(error) {
-				console.log("OK_API: initialization error!");
-				console.log(error);
-				OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnInitFail, OKinstance);
+	};
+
+	Acts.prototype.CallForUserFriends = function (){
+
+		var callback_friends_get = function(method,result,data){
+			if (result){
+				FriendsList = result;
+				OKRuntime.trigger(cr.plugins_.OKAPI.prototype.cnds.OnFriendsGet, OKinstance);
 			}
-		);
+		}
+
+		// ASK FOR FRIENDS
+		FAPI.Client.call({"method":"friends.get"}, callback_friends_get);
+
 	};
 	
 	pluginProto.acts = new Acts();

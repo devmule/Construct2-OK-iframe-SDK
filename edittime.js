@@ -59,6 +59,10 @@ AddCondition(6,	cf_trigger, "On invite declined", "friend invitation", "On invit
 
 AddCondition(7, cf_looping, "For each invited friend", "friend invitation", "For each invited friend", "Repeat the event for each invited friend.", "ForEachInvited");
 
+AddCondition(8, cf_looping, "For each friend", "user data", "For each player friend", "Repeat the event for each friend. call 'On friends get' when done", "ForEachFriend");
+
+AddCondition(9,	cf_trigger, "On friends get", "user data", "On friends get", "Triggered when player friends call done successfully.", "OnFriendsGet");
+
 
 // AddAction(id,				// any positive integer to uniquely identify this action
 //			 flags,				// (see docs) af_none, af_deprecated
@@ -80,6 +84,8 @@ AddStringParam("params",		"JSON custom parameters to be transferred to the serve
 AddAction(1, af_none, "Show invite", "windows", "Show invite: {0}", "Show invite dialog.", "ShowInvite");
 
 AddAction(2, af_none, "Init User", "initialization", "Init User", "try to initialize user, call triggers 'On init done' and 'On init fail'", "InitUser");
+AddAction(3, af_none, "Call for User data", "user data", "Call for User data", "get user data like name, avatar, etc. When done trigger 'On user data get'", "CallForUserData");
+AddAction(4, af_none, "Call for friends list", "user data", "Call for friends list", "get actual OKID's of friends, trigger 'On friends get' when done", "CallForUserFriends");
 
 // AddExpression(id,			// any positive integer to uniquely identify this expression
 //				 flags,			// (see docs) ef_none, ef_deprecated, ef_return_number, ef_return_string,
@@ -103,6 +109,9 @@ AddExpression(4, ef_return_string, "User avatar", "user data", "GetUserAvatar", 
 
 
 AddExpression(5, ef_return_string, "Current invited friend ID", "friend invitation", "GetInvitedFriendID", "friend ID in foreach-loop cycle");
+
+
+AddExpression(6, ef_return_string, "Current user friend ID", "user data", "GetFriendID", "friend ID in foreach-loop cycle");
 
 ////////////////////////////////////////
 ACESDone();
